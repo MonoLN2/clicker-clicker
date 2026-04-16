@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Clicker Clicker v1.5.1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="main-game">
+            <h1 id="clicker-name">Clicker Clicker</h1>
+            <button onclick="changeName()">Change Name</button>
+            <br>
+            <button onclick="resetProgress()">RESET PROGRESS</button>
+            <br>
+            <button onclick="showPatchNotes()">PATCH NOTES</button>
+            <p>In this clicker, you click clickers to get more clickers!</p>
+            <h2 id="score">Score: 0</h2>
+            <button id="main-button" onclick="onMainButtonClicked()">Click me!</button>
+            <p id="cps">CPS: 0</p>
+            <p id="cpc">CPC: 1</p>
+            <p id="cpc-cap">CPC CAP: 100</p>
+        </div>
+
+        <div id="side-panel" class="side-panel">
+            <span class="tabs">
+                <button class="tab-button"onclick="switchTab('store-panel')">Store</button>
+                <button class="tab-button" onclick="switchTab('trophy-panel')">Achievements</button>
+            </span>
+            <div class="store-panel" id="store-panel">
+                <h2>Shop</h2>
+            </div>
+            
+            <div class="store-panel" id="trophy-panel">
+                <h2>Achievements</h2>
+            </div>
+        </div>
+
+        <div id="custom-alert-overlay" class="alert-overlay">
+            <div class="alert-box">
+                <h3 id="alert-title">Notificiation</h3>
+                <p id="alert-message">This is a message!</p>
+                <button onclick="closeAlert()">Close</button>
+            </div>
+        </div>
+
+        <div id="custom-input-overlay" class="alert-overlay">
+            <div class="alert-box">
+                <h3 id="input-alert-title">Notification</h3>
+                <p id="input-alert-message">This is a message!</p>
+                <textarea id="input-textarea" placeholder="Enter text here....">TextTextText</textarea>
+                <span id="input-buttons">
+                    <button onclick="closeInputAlert()">Close</button>
+                    <button onclick="confirmInputAlert()">Confirm</button>
+                </span>
+            </div>
+        </div>
+    </div>
+        
+    <script src="main.js"></script>
+</body>
+</html>
