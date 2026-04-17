@@ -132,6 +132,8 @@ updateStats();
 updateName();
 renderShop();
 renderTrophies();
+
+console.log("Save data loaded. Game officially started. Good luck!");
         
 // ----- ENGINE & GAME LOOP -----
 
@@ -139,6 +141,34 @@ renderTrophies();
 function onMainButtonClicked() {
     let currenntClickPower = (frenzyTimeLeft > 0) ? cpc * 777 : cpc; // If frenzy is active, we get 777x our normal CPC, otherwise we just get our normal CPC. The speculation bonus is applied in the checkGoldenOpportunity function, since it affects the luck stat, which is only used in that function and not in the main click function.
     score += currenntClickPower;
+
+    // logic for free upgrades from lucky clicks
+    if (luckyClickTimeLeft > 0) {
+        if (Math.random() > 0.05) return; // 5% chance to get a free upgrade on click, if they don't get it, return so it doesn't break the game.
+        console.log("Lucky Click! Attempting to give a free upgrade...");
+        let freeUpg = upgrades[Math.floor(Math.random() * upgrades.length)];
+        if (freeUpg.type === 'cps') {
+            cps += freeUpg.bonus;
+            cps = Math.round(cps);
+            localStorage.setItem('clickerCps', cps);
+            console.log(`Free CPS Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPS)`);
+        } else if (freeUpg.type === 'cpc' && cpc < cpcCap) {
+            cpc += freeUpg.bonus;
+            if (cpc > cpcCap) cpc = cpcCap;
+            localStorage.setItem('clickerCpc', cpc);
+            console.log(`Free CPC Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPC)`);
+        } else if (freeUpg.type === 'cpc-cap') {
+            cpcCap += (cpcCap / 2);
+            cpcCap = Math.round(cpcCap);
+            localStorage.setItem('clickerCpcCap', cpcCap);
+            console.log(`Free CPC Cap Upgrade: ${freeUpg.name} (+50% CPC Cap)`);
+        } else if (freeUpg.type === 'offline' && offlineBonus < obCap) {
+            offlineBonus += freeUpg.bonus;
+            if (offlineBonus > obCap) offlineBonus = obCap;
+            localStorage.setItem('clickerOfflineBonus', offlineBonus);
+            console.log(`Free Offline Bonus Upgrade: ${freeUpg.name} (+${freeUpg.bonus * 100}% Offline Bonus)`);
+        }
+    }
 
     // This is the standard: after we change any of the main variables, re-render everything that might have changed.
     updateScore();
@@ -318,6 +348,7 @@ function updateBonuses() {
     if (highProductivityTimeLeft > 0) {
         let multiplier = Math.random() * 20 + 10 + luck;
         multiplier = clamp(multiplier, 10, 30);
+        if (luck > 0.5) luck = 0.5; // Cap the luck at 50% because otherwise it would be way too overpowered, and it would break the game.
         productivityMultiplier = multiplier;
     } else {
         productivityMultiplier = 1;
@@ -511,13 +542,21 @@ function calculateOfflineEarnings() {
     
     updateScore();
 
-    // So they can see t
-    showAlert("Welcome back!", `You earned: (Raw earnings from CPS) $${offlineEarnings} * (Offline Bonus) ${(offlineBonus * 100)}% =  (TOTAL EARNINGS) $${offlineEarnings * offlineBonus} while you were away!`);
+    console.log(currentTime, pastTime, diffInSeconds, offlineEarnings, offlineBonus);
+
+    // calculate the exact time they were gone
+    let timeSinceLastPLayed = Math.floor(diffInSeconds / 3600) + " hours, " + Math.floor((diffInSeconds % 3600) / 60) + " minutes, and " + (diffInSeconds % 60) + " seconds";
+    showAlert("Welcome back!", `It's been ${timeSinceLastPLayed} since you last played. While you were gone, you earned $${offlineEarnings} with an offline bonus of ${Math.round(offlineBonus * 100)}%, giving you a total of $${Math.floor(offlineEarnings * offlineBonus)}!`);
 }
 
 async function checkGoldenOpportunity() {
     if (!gamePlayed) return;
-    if (Math.random() > luck) return; 
+    let roll = Math.random();
+    checkForTrophies(); // calculate luck first
+    console.log(`Rolling for Golden Opportunity... Rolled a ${roll}, need under ${luck} to trigger.`);
+    if (roll > luck) { console.log("No bonus for you!"); return; }
+    
+    console.log("Golden Opportunity triggered! Generating bonus options...");
 
     let bonusOptions = [];
     let attempts = 0;
@@ -533,6 +572,8 @@ async function checkGoldenOpportunity() {
     }
 
     if (bonusOptions.length < 3) return;
+
+    console.log("Bonus options generated:", bonusOptions);
 
     let optionsText = "You got a Golden Opportunity! Choose one:\n\n";
     bonusOptions.forEach((bonus, index) => {
@@ -611,8 +652,15 @@ window.onload = function() {
     if (!gamePlayed) {
         showAlert("Welcome!", "Welcome to Clicker Clicker!");
         localStorage.setItem('clickerPlayed', true);
-    } else {
-        if (savedTime) { calculateOfflineEarnings(); checkGoldenOpportunity(); }
+    } else if (savedTime) {
+        calculateOfflineEarnings();
+        
+        // Use a timeout to ensure luck is calculated and the UI is ready
+        setTimeout(() => {
+            console.log("Forcing luck update before opportunity check...");
+            checkForTrophies();
+            checkGoldenOpportunity();
+        }, 500); // 500ms delay is usually enough to bypass local file security lags
     }
 };
 
@@ -628,12 +676,7 @@ setInterval(() => {
     if (highProductivityTimeLeft > 0) highProductivityTimeLeft--;
     
     // Handle Lucky Click toggle
-    if (luckyClickTimeLeft > 0) {
-        luckyClickTimeLeft--;
-        luckyClickActive = true;
-    } else {
-        luckyClickActive = false;
-    }
+    if (luckyClickTimeLeft > 0) luckyClickTimeLeft--;
 
     // Handle Coupon Reset
     if (couponTimeLeft > 0) {
