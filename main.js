@@ -79,12 +79,12 @@ let currentPrices = {};
 let speculationDate = null; // The date when the speculation bonus was activated, used to reset the bonus at the end of the day.
 
 // bonus trackers
-let frenzyTimeLeft = 0;
+let frenzyTimeLeft = -1; // Time left for the frenzy bonus, in seconds. Starts at -1 so it doesn't trigger the end alert on the first load.
 let speculationActive = false;
-let highProductivityTimeLeft = 0;
-let couponTimeLeft = 0;
+let highProductivityTimeLeft = -1;
+let couponTimeLeft = -1;
 let productivityMultiplier = 1;
-let luckyClickTimeLeft = 0;
+let luckyClickTimeLeft = -1;
 
 // ----- LOAD SAVED DATA -----
 
@@ -144,33 +144,36 @@ function onMainButtonClicked() {
 
     // logic for free upgrades from lucky clicks
     if (luckyClickTimeLeft > 0) {
-        if (Math.random() > 0.05) return; // 5% chance to get a free upgrade on click, if they don't get it, return so it doesn't break the game.
-        console.log("Lucky Click! Attempting to give a free upgrade...");
-        let freeUpg = upgrades[Math.floor(Math.random() * upgrades.length)];
-        if (freeUpg.type === 'cps') {
-            cps += freeUpg.bonus;
-            cps = Math.round(cps);
-            localStorage.setItem('clickerCps', cps);
-            console.log(`Free CPS Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPS)`);
-        } else if (freeUpg.type === 'cpc' && cpc < cpcCap) {
-            cpc += freeUpg.bonus;
-            if (cpc > cpcCap) cpc = cpcCap;
-            localStorage.setItem('clickerCpc', cpc);
-            console.log(`Free CPC Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPC)`);
-        } else if (freeUpg.type === 'cpc-cap') {
-            cpcCap += (cpcCap / 2);
-            cpcCap = Math.round(cpcCap);
-            localStorage.setItem('clickerCpcCap', cpcCap);
-            console.log(`Free CPC Cap Upgrade: ${freeUpg.name} (+50% CPC Cap)`);
-        } else if (freeUpg.type === 'offline' && offlineBonus < obCap) {
-            offlineBonus += freeUpg.bonus;
-            if (offlineBonus > obCap) offlineBonus = obCap;
-            localStorage.setItem('clickerOfflineBonus', offlineBonus);
-            console.log(`Free Offline Bonus Upgrade: ${freeUpg.name} (+${freeUpg.bonus * 100}% Offline Bonus)`);
+        if (Math.random() < 0.05) {
+            console.log("Lucky Click! Attempting to give a free upgrade...");
+            let freeUpg = upgrades[Math.floor(Math.random() * upgrades.length)];
+            if (freeUpg.type === 'cps') {
+                cps += freeUpg.bonus;
+                cps = Math.round(cps);
+                localStorage.setItem('clickerCps', cps);
+                console.log(`Free CPS Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPS)`);
+            } else if (freeUpg.type === 'cpc' && cpc < cpcCap) {
+                cpc += freeUpg.bonus;
+                if (cpc > cpcCap) cpc = cpcCap;
+                localStorage.setItem('clickerCpc', cpc);
+                console.log(`Free CPC Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPC)`);
+            } else if (freeUpg.type === 'cpc-cap') {
+                cpcCap += (cpcCap / 2);
+                cpcCap = Math.round(cpcCap);
+                localStorage.setItem('clickerCpcCap', cpcCap);
+                console.log(`Free CPC Cap Upgrade: ${freeUpg.name} (+50% CPC Cap)`);
+            } else if (freeUpg.type === 'offline' && offlineBonus < obCap) {
+                offlineBonus += freeUpg.bonus;
+                if (offlineBonus > obCap) offlineBonus = obCap;
+                localStorage.setItem('clickerOfflineBonus', offlineBonus);
+                console.log(`Free Offline Bonus Upgrade: ${freeUpg.name} (+${freeUpg.bonus * 100}% Offline Bonus)`);
+            }
+        } else {
+            console.log("Lucky Click missed! No free upgrade this time.");
         }
     }
 
-    // This is the standard: after we change any of the main variables, re-render everything that might have changed.
+    // This is the standard for the rest of the game: after we change any of the main variables, re-render everything that might have changed.
     updateScore();
     renderShop();
 }
@@ -606,13 +609,17 @@ function applyChosenBonus(chosenBonus) {
         showAlert("Jackpot!", `You got $${jackpotAmount}!`);
     } else if (chosenBonus.id === "high-prod") {
         highProductivityTimeLeft = 70;
+        showAlert("High Productivity!", "You have a temporary boost in productivity!");
     } else if (chosenBonus.id === "frenzy") {
         frenzyTimeLeft = 15;
+        showAlert("Frenzy!", "For the next 15 seconds, gain 777x your normal CPC, regardless of the cap!");
     } else if (chosenBonus.id === "lucky") {
         luckyClickTimeLeft = 60;
+        showAlert("Lucky Click!", "For the next 60 seconds, there is a 5% chance that a click gives you a random upgrade for free!");
     } else if (chosenBonus.id === "spec") {
         speculationActive = true;
         localStorage.setItem('clickerSpeculation', new Date().toDateString()); // Save the date when the speculation bonus was activated, so we can reset it at the end of the day.
+        showAlert("Speculation!", "Gain a 20% boost to your luck stat that resets at the end of the day!");
     } else if (chosenBonus.id === "coupon") {
         let discount = Math.floor(luck * 100);
         for (let key in currentPrices) {
@@ -624,8 +631,8 @@ function applyChosenBonus(chosenBonus) {
         }
         couponTimeLeft = 300;
         renderShop();
+        showAlert("Coupon Activated!", "You have a 20% discount on all upgrades for the next 5 minutes!");
     }
-    showAlert("Bonus Applied!", `${chosenBonus.name} is now active!`);
 }
 
 function resetPricesAfterCoupon() {
@@ -672,17 +679,33 @@ setInterval(updateSavedTime, 1000);
 // interval for timed bounuses
 // interval for timed bonuses
 setInterval(() => {
+    // decrease the times
     if (frenzyTimeLeft > 0) frenzyTimeLeft--;
     if (highProductivityTimeLeft > 0) highProductivityTimeLeft--;
-    
-    // Handle Lucky Click toggle
     if (luckyClickTimeLeft > 0) luckyClickTimeLeft--;
+    if (couponTimeLeft > 0) couponTimeLeft--;
 
-    // Handle Coupon Reset
-    if (couponTimeLeft > 0) {
-        couponTimeLeft--;
-        if (couponTimeLeft === 0) {
-            resetPricesAfterCoupon(); // Call the reset function when time hits 0
-        }
+    // show an alert when any of the bonuses have ended
+    if (frenzyTimeLeft === 0) {
+        showAlert("Frenzy Ended", "The Frenzy bonus has ended. Your CPC has returned to normal.");
+        frenzyTimeLeft = -1; // Set it to -1 so it doesn't keep triggering the alert every second after it ends
+        console.log("Frenzy bonus ended.");
     }
+    if (highProductivityTimeLeft === 0) {
+        showAlert("High Productivity Ended", "The High Productivity bonus has ended. Your CPC has returned to normal.");
+        highProductivityTimeLeft = -1; // Set it to -1 so it doesn't keep triggering the alert every second after it ends
+        console.log("High Productivity bonus ended.");
+    }
+    if (luckyClickTimeLeft === 0) {
+        showAlert("Lucky Click Ended", "The Lucky Click bonus has ended. Your CPC has returned to normal.");
+        luckyClickTimeLeft = -1; // Set it to -1 so it doesn't keep triggering the alert every second after it ends
+        console.log("Lucky Click bonus ended.");
+    }
+    if (couponTimeLeft === 0) {
+        resetPricesAfterCoupon();
+        showAlert("Coupon Ended", "The Lucky Coupon bonus has ended. Store prices have returned to normal.");
+        couponTimeLeft = -1; // Set it to -1 so it doesn't keep triggering the alert every second after it ends
+        console.log("Coupon bonus ended, prices reset.");
+    }
+
 }, 1000);

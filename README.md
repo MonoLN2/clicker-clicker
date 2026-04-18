@@ -1,4 +1,4 @@
-# CLICKER CLICKER - AN IDLE GAME BY MONOLN2
+# Clicker Clicker - an idle game by MonoLN2
 
 ## About
 
@@ -37,4 +37,9 @@ v1.5.1: Fixed several bugs and cleaned up some code.
 v1.5.2: Made the main button and tab buttons larger, and fixed the CPC cap from becoming a decimal.
 
 v1.5.5: Finally finished the custom input prompt.
-Close
+
+v1.6.0 (pre-release): Nerfed offline bonus, added early version of bonus upgrade. fixed bugs like sticky upgrades & achievements and rounded out decimals.
+
+v1.6.2 (pre-release): Fixed critical bugs with the bonus engine.
+
+v1.6.3 (pre-release): Fixed critical bugs with the bonus engine.
