@@ -1,3 +1,6 @@
+const ver = "1.6.4"; // version stored here
+document.title = "Clicker Clicer v" + ver;
+
 /*
 ##############################
 # WELCOME TO CLICKER CLICKER #
@@ -8,19 +11,21 @@
 
 // GAME DATABASE
 let upgrades = [
-    { id: "ads", name: "Advertisements", baseCost: 10, bonus: 1, type: "cps" },
-    { id: "yt_ch", name: "YouTube Channel", baseCost: 15, bonus: 1, type: "cpc" },
-    { id: "yt_pro", name: "YouTube Promotion", baseCost: 100, bonus: 2, type: "cps" },
-    { id: "auto", name: "Auto Clicker", baseCost: 200, bonus: 5, type: "cps" },
-    { id: "cross", name: "Cross-Platform", baseCost: 500, bonus: 5, type: "cpc" },
-    { id: "another", name: "ANOTHER Clicker", baseCost: 1000, bonus: 25, type: "cpc" },
-    { id: "emp", name: "Employee", baseCost: 2000, bonus: 100, type: "cps" },
-    { id: "gfx", name: "Better Graphics", baseCost: 10000, bonus: 75, type: "cpc" },
-    { id: "merch", name: "Merchandise", baseCost: 15000, bonus: 150, type: "cps" },
-    { id: "robot", name: "Ad Robot", baseCost: 20000, bonus: 100, type: "cpc" },
-    { id: "ai", name: "AI Assistant", baseCost: 20000, bonus: 500, type: "cps" },
-    { id: "ceo", name: "Substitute CEO", baseCost: 10000000, bonus: 0.1, type: "offline"},
-    { id: "crossover", name: "Crossover", baseCost: 100000, bonus: '50%', type: "cpc-cap"}
+    { id: "ads", name: "Advertisements", baseCost: 10, bonus: 1, type: "cps", desc: "Advertisments for your clicker."},
+    { id: "yt_ch", name: "YouTube Channel", baseCost: 15, bonus: 1, type: "cpc", desc: "A YouTube channel to promote your clicker." },
+    { id: "yt_pro", name: "YouTube Promotion", baseCost: 100, bonus: 2, type: "cps", desc: "A promotion on another YouTuber's video." },
+    { id: "auto", name: "Auto Clicker", baseCost: 200, bonus: 5, type: "cps", desc: "Add an autoclick feature to your clicker." },
+    { id: "cross", name: "Cross-Platform", baseCost: 500, bonus: 5, type: "cpc", desc: "'Now availible on console and mobile!'" },
+    { id: "another", name: "ANOTHER Clicker", baseCost: 1000, bonus: 25, type: "cpc", desc: "Because one wasn't enough." },
+    { id: "emp", name: "Employee", baseCost: 2000, bonus: 100, type: "cps", desc: "An employee to maintain your game." },
+    { id: "gfx", name: "Better Graphics", baseCost: 10000, bonus: 75, type: "cpc", desc: "Cool shadows and glow!" },
+    { id: "merch", name: "Merchandise", baseCost: 15000, bonus: 150, type: "cps", desc: "'Get your OFFICIAL merchandise today at coolestclicker.com!'" },
+    { id: "robot", name: "Ad Robot", baseCost: 20000, bonus: 100, type: "cpc", desc: "A robot to spam advertiesments!" },
+    { id: "ai", name: "AI Assistant", baseCost: 20000, bonus: 500, type: "cps", desc: "An AI assistant to help you with development." },
+    { id: "quantum", name: "Quantum Clicking", baseCost: 40000, bonus: 500, type: "cpc", desc:"Cutting-edge mouse technology." },
+    { id: "ceo", name: "Substitute CEO", baseCost: 10000000, bonus: 0.1, type: "offline", desc: "Going on vacation? Hire someone to manage your employees for you!" },
+    { id: "crossover", name: "Crossover", baseCost: 100000, bonus: 0.5, type: "cpc-cap", desc:"'BREAKING NEWS: NEW CLICKER CROSSOVER!'" },
+    { id: "lego", name: "LEGO set", baseCost: 5000000, bonus: 1, type: "cpc-cap", desc: "Official clicker lego set!" }
 ];
 
 let trophies = [
@@ -75,6 +80,7 @@ let obCap = 3.0; // Offline bonus cap, there will be an upgrade to raise this in
 let cpcCap = 100;
 let currentTab = 'store-panel';
 let collectedTrophies = [];
+let notifications = [];
 let currentPrices = {};
 let speculationDate = null; // The date when the speculation bonus was activated, used to reset the bonus at the end of the day.
 
@@ -105,6 +111,8 @@ const savedTrophies = localStorage.getItem('clickerTrophies');
 const savedCpcCap = localStorage.getItem('clickerCpcCap');
 const savedSpeculation = localStorage.getItem('clickerSpeculation');
 
+// we don't need to save notifications.
+
 // Apply save data     
 if (savedPrices) currentPrices = JSON.parse(savedPrices);
 if (savedScore) score = parseInt(savedScore);
@@ -134,13 +142,15 @@ renderShop();
 renderTrophies();
 
 console.log("Save data loaded. Game officially started. Good luck!");
+
+const upgNotif = document.getElementById('upg-notifier');
         
 // ----- ENGINE & GAME LOOP -----
 
 // VERY IMPORTANT FUNCTION: THE CLICK BUTTON
 function onMainButtonClicked() {
-    let currenntClickPower = (frenzyTimeLeft > 0) ? cpc * 777 : cpc; // If frenzy is active, we get 777x our normal CPC, otherwise we just get our normal CPC. The speculation bonus is applied in the checkGoldenOpportunity function, since it affects the luck stat, which is only used in that function and not in the main click function.
-    score += currenntClickPower;
+    let currentClickPower = (frenzyTimeLeft > 0) ? cpc * 777 : cpc; // If frenzy is active, we get 777x our normal CPC, otherwise we just get our normal CPC. The speculation bonus is applied in the checkGoldenOpportunity function, since it affects the luck stat, which is only used in that function and not in the main click function.
+    score += currentClickPower;
 
     // logic for free upgrades from lucky clicks
     if (luckyClickTimeLeft > 0) {
@@ -151,25 +161,23 @@ function onMainButtonClicked() {
                 cps += freeUpg.bonus;
                 cps = Math.round(cps);
                 localStorage.setItem('clickerCps', cps);
-                console.log(`Free CPS Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPS)`);
+                notify("Free upgrade!", `Free CPS Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPS)`, new Date());
             } else if (freeUpg.type === 'cpc' && cpc < cpcCap) {
                 cpc += freeUpg.bonus;
                 if (cpc > cpcCap) cpc = cpcCap;
                 localStorage.setItem('clickerCpc', cpc);
-                console.log(`Free CPC Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPC)`);
+                notify("Free upgrade!", `Free CPC Upgrade: ${freeUpg.name} (+${freeUpg.bonus} CPC)`, new Date());
             } else if (freeUpg.type === 'cpc-cap') {
                 cpcCap += (cpcCap / 2);
                 cpcCap = Math.round(cpcCap);
                 localStorage.setItem('clickerCpcCap', cpcCap);
-                console.log(`Free CPC Cap Upgrade: ${freeUpg.name} (+50% CPC Cap)`);
+                notify("Free upgrade!", `Free CPC Cap Upgrade: ${freeUpg.name} (+50% CPC Cap)`, new Date());
             } else if (freeUpg.type === 'offline' && offlineBonus < obCap) {
                 offlineBonus += freeUpg.bonus;
                 if (offlineBonus > obCap) offlineBonus = obCap;
                 localStorage.setItem('clickerOfflineBonus', offlineBonus);
-                console.log(`Free Offline Bonus Upgrade: ${freeUpg.name} (+${freeUpg.bonus * 100}% Offline Bonus)`);
+                notify("Free upgrade!", `Free Offline Bonus Upgrade: ${freeUpg.name} (+${freeUpg.bonus * 100}% Offline Bonus)`, new Date());
             }
-        } else {
-            console.log("Lucky Click missed! No free upgrade this time.");
         }
     }
 
@@ -203,7 +211,7 @@ function buyUpgrade(upg) {
             }
             localStorage.setItem('clickerCpc', cpc);
         } else if (upg.type === "cpc-cap") {
-            cpcCap += (cpcCap / 2); // 50% raise
+            cpcCap += (cpcCap * upg.bonus); // raise based on the bonus
             cpcCap = Math.round(cpcCap);
             localStorage.setItem('clickerCpcCap', cpcCap);
         } else if (upg.type === "offline") {
@@ -227,8 +235,8 @@ function buyUpgrade(upg) {
 
 // Since the CEO upgrade needs to have name yeeterson to access, we need a seperate function
 function buyOfflineBonus() {
-    if (score > 1000000) {
-        score -= 1000000;
+    if (score > 10000000 && offlineBonus < obCap) { // make sure to not buy it if they can't afford it, or if they already have the max bonus
+        score -= 10000000;
         offlineBonus += 0.5;
         localStorage.setItem('clickerOfflineBonus', offlineBonus);
     }
@@ -247,37 +255,8 @@ async function changeName() {
 }
 
 function updateName() {
-    document.getElementById('clicker-name').innerText = clickerName;
+    document.getElementById('clicker-name').innerText = clickerName + ` (v${ver})`;
     localStorage.setItem('clickerName', clickerName);
-}
-
-// Unlock logic
-function unlockSecretUpgrade() {
-    let secretUpgrade = document.getElementById('secret-upgrade');
-    // If the element doesn't exist, return so it doesn't break
-    if (!secretUpgrade) return;
-
-    if (!currentPrices["ceo"]) currentPrices["ceo"] = 10000000; // If the price is null, fix it
-
-    // If the name is yeeterson
-    if (clickerName.toLowerCase().trim() === "yeeterson") {
-        let currentCost = currentPrices["ceo"];
-        secretUpgrade.innerText = `Hire Substitute CEO - Cost: $${currentCost} | +10% Offline Earnings`;
-        if (currentCost > score) {
-            secretUpgrade.style.backgroundColor = "#ff4d4d"; // Red
-        } else {
-            secretUpgrade.style.backgroundColor = "#ffab00"; // Orange
-        }
-
-        secretUpgrade.onclick = function() {
-            const ceoData = upgrades.find(u => u.id === 'ceo');
-            buyUpgrade(ceoData);
-        };
-        secretUpgrade.style.display = "flex";
-    } else {
-        secretUpgrade.innerText = "???";
-        secretUpgrade.onclick = null;
-    }
 }
 
 function checkForTrophies() {
@@ -358,45 +337,64 @@ function updateBonuses() {
     }
 }
 
+function notify(header, message, timestamp) {
+    console.log(`Recieved notification w/ title: ${header}, message: ${message}, and timestamp: ${timestamp}.`)
+    let newMessage = { header: header, message: message, timestamp: timestamp };
+    notifications.push(newMessage);
+    renderNotifications();
+}
+
 function renderShop() {
     const store = document.getElementById('store-panel');
-    const buttons = store.querySelectorAll('button');
 
-    // Delete all existing buttons so we don't flood the panel with upgrades
-    buttons.forEach(btn => btn.remove());
-
-    // For every upgrade in the database
     upgrades.forEach(upg => {
-        // Again, the CEO is rendered seperately so we don't need to bother rendering it.
-        if (upg.id === "ceo") return;
-
-        // If the price doesn't exist for some reason, set it to base cost to prevent crash
-        if (!currentPrices[upg.id]) currentPrices[upg.id] = upg.baseCost;
-
-        // Create the button for the upgrade
-        let btn = document.createElement('button');
-        let cost = currentPrices[upg.id];
-        btn.innerText = `${upg.name} - Cost: $${cost} | + ${upg.bonus} ${upg.type.toUpperCase()}`;
-
-        // Color it differently if they can't afford it
-        if (cost > score) {
-            btn.style.backgroundColor = "#ff4d4d";
-        } else {
-            btn.style.backgroundColor = "#ffab00"
+        // CEO name check logic
+        if (upg.id === "ceo" && clickerName.toLowerCase().trim() !== "yeeterson") {
+            let existingCeo = document.getElementById(`btn-ceo`);
+            if (existingCeo) existingCeo.remove();
+            return; 
         }
 
-        // Make the button actually work, and add it to the shop
-        btn.onclick = function() { buyUpgrade(upg); };
-        store.appendChild(btn);
+        // Check if button already exists
+        let btn = document.getElementById(`btn-${upg.id}`);
+        let cost = currentPrices[upg.id] || upg.baseCost;
+        let extraText = (upg.type === 'cpc-cap') ? `${upg.bonus * 100}%` : upg.bonus;
+
+        if (!btn) {
+            // Create only if it doesn't exist
+            btn = document.createElement('button');
+            btn.id = `btn-${upg.id}`;
+            btn.onclick = function() { buyUpgrade(upg); };
+            store.appendChild(btn);
+        }
+
+        // Update properties (this prevents the flicker/pulse)
+        btn.innerText = `${upg.name} - Cost: $${cost} | + ${extraText} ${upg.type.toUpperCase()}`;
+        btn.title = upg.desc;
+        btn.style.backgroundColor = (cost > score) ? "#ff4d4d" : "#ffab00";
     });
+}
 
-    // Secret upgrade
-    let secretBtn = document.createElement('button');
-    secretBtn.id = 'secret-upgrade';
-    secretBtn.style.display = 'none';
-    store.appendChild(secretBtn)
+function renderNotifications() {
+    const notificationPanel = document.getElementById('notification-panel');
+    const cards = notificationPanel.querySelectorAll('div');
+    cards.forEach(crd => crd.remove()); // remove cards first so we don't have duplicates
 
-    unlockSecretUpgrade();
+    notifications.forEach(ntf => {
+        let crd = document.createElement('div');
+        let header = ntf.header;
+        let message = ntf.message;
+        let timestamp = ntf.timestamp;
+        crd.className = "notification-card";
+
+        crd.innerHTML = `
+        <p>${timestamp}</p>
+        <p class="trophy-header">${header}</p>
+        <p>${message}</p>
+        `;
+        notificationPanel.appendChild(crd);
+
+    });
 }
 
 function renderTrophies() {
@@ -429,6 +427,36 @@ function renderTrophies() {
     });
 }
 
+function renderBonusNotif() {
+    let bonusesActive = [];
+    let bonusTimes = [];
+    
+    // check if any bonuses are active
+    if (luckyClickTimeLeft > 0) { bonusesActive.push("Lucky Click"); bonusTimes.push(luckyClickTimeLeft); }
+    if (couponTimeLeft > 0) { bonusesActive.push("Lucky Coupon"); bonusTimes.push(couponTimeLeft); }
+    if (speculationActive) { bonusesActive.push("Speculation"); bonusTimes.push("rest of the day"); }
+    if (frenzyTimeLeft > 0) { bonusesActive.push("Frenzy"); bonusTimes.push(frenzyTimeLeft); } 
+    if (highProductivityTimeLeft > 0) { bonusesActive.push("High Productivity"); bonusTimes.push(highProductivityTimeLeft); }
+
+    const notifs = upgNotif.querySelectorAll('p');
+    notifs.forEach(notif => notif.remove()); // remove the notifs first so there aren't duplicates
+
+    if (bonusesActive.length === 0) {
+        upgNotif.innerHTML = "<p>No bonuses currently active.</p>";
+        return;
+    }
+
+    upgNotif.innerHTML = "<p>Bonuses currently active:</p>";
+    bonusesActive.forEach(bonus => {
+        let newNotif = document.createElement('p');
+        newNotif.innerText = `${bonus}, time remaining: ${bonusTimes[bonus.indexOf(bonus)]}`;
+        upgNotif.appendChild(newNotif);
+    });
+
+
+
+}
+
 // ----- HELPER FUNCTIONS -----
 
 async function resetProgress() {
@@ -447,6 +475,7 @@ async function resetProgress() {
         localStorage.removeItem('clickerPrices');
         localStorage.removeItem('clickerTrophies');
         localStorage.removeItem('clickerCpcCap');
+        localStorage.removeItem('clickerSpeculation');
         
         // Reset all of the variables
         score = 0;
@@ -457,12 +486,23 @@ async function resetProgress() {
         collectedTrophies = [];
         clickerName = "Clicker Clicker";
 
+        // Reset all of the bonuses
+        luckyClickTimeLeft = -1;
+        couponTimeLeft = -1;
+        frenzyTimeLeft = -1;
+        highProductivityTimeLeft = -1
+        speculationActive = false;
+
+        notifications = [];
+
         // Redraw everything
         updateScore();
         updateStats();
         updateName();
         renderShop();
         renderTrophies();
+        renderBonusNotif();
+        renderNotifications();
     } else {
         showAlert("CANCELLED", "Deletion cancelled.");
     }
@@ -471,6 +511,7 @@ async function resetProgress() {
 // Shortened helper functions
 function showPatchNotes() { showAlert("PATCH NOTES", patchNotes) }
 function closeAlert() { document.getElementById('custom-alert-overlay').style.display = 'none'; }
+function closeInputAlert() { document.getElementById('custom-input-overlay').style.display = 'none'; }
 function updateSavedTime() { localStorage.setItem('clickerSavedTime', new Date()); }
 function runAutoClick() { score += cps * productivityMultiplier; score = Math.round(score); updateScore(); }
 
@@ -506,10 +547,6 @@ function confirmInputAlert() {
     }
 }
 
-function closeInputAlert() {
-    document.getElementById('custom-input-overlay').style.display = 'none';
-}
-
 // Tab switching
 function switchTab(tab) {
     // Hide the previous tab and show the new one.
@@ -524,10 +561,11 @@ function switchTab(tab) {
     renderTrophies();
 }
 
-function clamp(x, min, max) { // helper function to clamp a number between a min and max
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
+// helper function to clamp a number between a min and max
+function clamp(x, min, max) { 
+    if (x < min) return min; // if x is less than the minimum, return the minimum
+    if (x > max) return max; // if x is greater then the maximum, return the maximum
+    return x; // otherwise, return x
 }
 
 function calculateOfflineEarnings() {
@@ -550,6 +588,7 @@ function calculateOfflineEarnings() {
     // calculate the exact time they were gone
     let timeSinceLastPLayed = Math.floor(diffInSeconds / 3600) + " hours, " + Math.floor((diffInSeconds % 3600) / 60) + " minutes, and " + (diffInSeconds % 60) + " seconds";
     showAlert("Welcome back!", `It's been ${timeSinceLastPLayed} since you last played. While you were gone, you earned $${offlineEarnings} with an offline bonus of ${Math.round(offlineBonus * 100)}%, giving you a total of $${Math.floor(offlineEarnings * offlineBonus)}!`);
+    notify("Welcome back!", `It's been ${timeSinceLastPLayed} since you last played. While you were gone, you earned $${offlineEarnings} with an offline bonus of ${Math.round(offlineBonus * 100)}%, giving you a total of $${Math.floor(offlineEarnings * offlineBonus)}!`, currentTime);
 }
 
 async function checkGoldenOpportunity() {
@@ -603,7 +642,7 @@ async function checkGoldenOpportunity() {
 
 function applyChosenBonus(chosenBonus) {
     if (chosenBonus.id === "jackpot") {
-        let jackpotAmount = Math.floor(Math.random() * 1000 * luck);
+        let jackpotAmount = Math.floor(Math.random() * 1000 * (luck + Math.random() * 10));
         score += jackpotAmount;
         updateScore();
         showAlert("Jackpot!", `You got $${jackpotAmount}!`);
@@ -647,13 +686,12 @@ function resetPricesAfterCoupon() {
     }
     
     renderShop(); // Refresh the UI to show the higher prices
-    showAlert("Coupon Expired", "The store prices have returned to normal.");
+    notify("Coupon Expired", "The store prices have returned to normal.");
 }
 
 // When the game loads, render everything and check if they have previous save data
 window.onload = function() {
     renderShop();
-    unlockSecretUpgrade();
     renderTrophies();
 
     if (!gamePlayed) {
@@ -675,6 +713,7 @@ window.onload = function() {
 setInterval(checkForTrophies, 1000);
 setInterval(runAutoClick, 1000);
 setInterval(updateSavedTime, 1000);
+setInterval(renderBonusNotif, 1000);
 
 // interval for timed bounuses
 // interval for timed bonuses

@@ -1,3 +1,9 @@
+:root {
+    --gold-glow: 0 0 15px rgba(255, 175, 0, 0.4);
+    --neon-blue: #00a;
+    --neon-gold: #ffab00;
+}
+
 body {
     background-color: #2f2f2f;
     color: #00a;
@@ -8,6 +14,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    background: radial-gradient(circle, #2f2f2f 0%, #1a1d23 100%)
 }
 
 button {
@@ -16,11 +23,19 @@ button {
     border: none;
     border-radius: 15px;
     height: 35px;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--gold-glow);
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
 }
 
 button:hover {
     background-color: #ffff00;
     cursor:pointer;
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 0 25px rgba(255, 255, 0, 0.6);
+    filter: brightness(1.2);
 }
 
 #input-textarea {
@@ -52,7 +67,6 @@ button:hover {
     gap: 15px;
 }
 
-
 #main-button {
     height: 45px;
 }
@@ -71,6 +85,11 @@ button:hover {
     justify-content: center;
 }
 
+.side-panel {
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+    border-left: 2px solid var(--neon-blue);
+}
+
 .store-panel {
     width: 300px;
     background-color: #1a1d23;
@@ -84,6 +103,7 @@ button:hover {
 }
 
 #trophy-panel { display: none; }
+#notification-panel { display: none; }
 
 .alert-overlay {
     display: none;
@@ -118,15 +138,21 @@ button:hover {
     margin-top: 20px;
 }
 
-.trophy-card {
-    background-color: #2f2f2f;
-    border: 2px solid #0000aa;
-    color: #ffab00;
+.trophy-card, .notification-card {
+    border: 1px solid var(--neon-blue);
+    color: #fa0;
+    background: linear-gradient(145deg ,#1e2127, #262a31);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    transition: border-color 0.3s ease;
 }
 
 .trophy-header {
     font-display: bold;
     color: #ff0000
+}
+
+.notification-card:hover {
+    border-color: var(--neon-gold);
 }
 
 .tab-button {

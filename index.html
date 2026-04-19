@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Clicker Clicker v1.5.1</title>
+    <title>Clicker Clicker v1.6.4</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,12 +20,16 @@
             <p id="cps">CPS: 0</p>
             <p id="cpc">CPC: 1</p>
             <p id="cpc-cap">CPC CAP: 100</p>
+            <div id="upg-notifier">
+                <p>No bonuses currently active.</p>
+            </div>
         </div>
 
         <div id="side-panel" class="side-panel">
             <span class="tabs">
-                <button class="tab-button"onclick="switchTab('store-panel')">Store</button>
+                <button class="tab-button"onclick="switchTab('store-panel')">Shop</button>
                 <button class="tab-button" onclick="switchTab('trophy-panel')">Achievements</button>
+                <button class="tab-button" onclick="switchTab('notification-panel')">Notifications</button>
             </span>
             <div class="store-panel" id="store-panel">
                 <h2>Shop</h2>
@@ -33,6 +37,10 @@
             
             <div class="store-panel" id="trophy-panel">
                 <h2>Achievements</h2>
+            </div>
+
+            <div class="store-panel" id="notification-panel">
+                <h2>Notifications</h2>
             </div>
         </div>
 

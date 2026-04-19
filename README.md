@@ -43,3 +43,5 @@ v1.6.0 (pre-release): Nerfed offline bonus, added early version of bonus upgrade
 v1.6.2 (pre-release): Fixed critical bugs with the bonus engine.
 
 v1.6.3 (pre-release): Fixed critical bugs with the bonus engine.
+
+v1.6.4 (pre-release): Added some new upgrades, and fixed not getting refunded for the offline bonus if you hit the cap. Also added a notification panel for less important messages. Also added cutting-edge CSS filters for a better experience.
