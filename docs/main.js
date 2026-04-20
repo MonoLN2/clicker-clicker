@@ -1,5 +1,5 @@
 const ver = "1.6.5"; // version stored here
-document.title = "Clicker Clicer v" + ver;
+document.title = "Clicker Clicker v" + ver;
 
 /*
 ##############################
