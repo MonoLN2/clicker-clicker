@@ -38,10 +38,12 @@ v1.5.2: Made the main button and tab buttons larger, and fixed the CPC cap from 
 
 v1.5.5: Finally finished the custom input prompt.
 
-v1.6.0 (pre-release): Nerfed offline bonus, added early version of bonus upgrade. fixed bugs like sticky upgrades & achievements and rounded out decimals.
+v1.6.0 (v1.6.5 pre-release): Nerfed offline bonus, added early version of bonus upgrade. fixed bugs like sticky upgrades & achievements and rounded out decimals.
 
-v1.6.2 (pre-release): Fixed critical bugs with the bonus engine.
+v1.6.2 (v1.6.5 pre-release): Fixed critical bugs with the bonus engine.
 
-v1.6.3 (pre-release): Fixed critical bugs with the bonus engine.
+v1.6.3 (v1.6.5 pre-release): Fixed critical bugs with the bonus engine.
 
-v1.6.4 (pre-release): Added some new upgrades, and fixed not getting refunded for the offline bonus if you hit the cap. Also added a notification panel for less important messages. Also added cutting-edge CSS filters for a better experience.
+v1.6.4 (v1.6.5 pre-release): Added some new upgrades, and fixed not getting refunded for the offline bonus if you hit the cap. Also added a notification panel for less important messages. Also added cutting-edge CSS filters for a better experience.
+
+v1.6.5: Added a new settings and patch notes panel. Upgraded the CSS for more fancy looks. Added sound effects and music, and fixed a few bugs. Also, added version tracking, which will be useful for future updates.

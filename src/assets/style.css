@@ -6,7 +6,8 @@
 
 body {
     background-color: #2f2f2f;
-    color: #00a;
+    color: #0af;
+    text-shadow: 2px 2px 4px #00a;
     margin: 0;
     font-family: 'Arial', sans-serif;
     display: flex;
@@ -15,6 +16,13 @@ body {
     justify-content: center;
     min-height: 100vh;
     background: radial-gradient(circle, #2f2f2f 0%, #1a1d23 100%)
+}
+
+body.low-perf * {
+    animation: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    transition: none !important;
 }
 
 button {
@@ -33,9 +41,15 @@ button {
 button:hover {
     background-color: #ffff00;
     cursor:pointer;
-    transform: scale(1.05) translateY(-2px);
+    transform: scale(1.05) translateY(-2px) translateX(5px);
     box-shadow: 0 0 25px rgba(255, 255, 0, 0.6);
     filter: brightness(1.2);
+}
+
+h1, h2, h3, #score, #cps, #cpc, #cpc-cap {
+    color: #0af;
+    text-shadow: 2px 2px 5px #00a, 0 0 10px rgba(0, 255, 255, 0.2);
+    font-weight: bold;
 }
 
 #input-textarea {
@@ -86,24 +100,33 @@ button:hover {
 }
 
 .side-panel {
+    display: flex;
+    flex-direction: column;
+    width: 550px;
+    height: 100vh;
+    background-color: #1a1d23;
     box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
     border-left: 2px solid var(--neon-blue);
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .store-panel {
-    width: 300px;
+    width: 100%;
+    flex-grow: 1;
     background-color: #1a1d23;
-    border-left: 2px solid #444;
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
-    height: 100vh;
+    box-sizing: border-box;
 }
 
 #trophy-panel { display: none; }
 #notification-panel { display: none; }
+#settings-panel { display: none; }
+#patch-panel { display: none; }
 
 .alert-overlay {
     display: none;
@@ -148,7 +171,7 @@ button:hover {
 
 .trophy-header {
     font-display: bold;
-    color: #ff0000
+    color: #0af
 }
 
 .notification-card:hover {

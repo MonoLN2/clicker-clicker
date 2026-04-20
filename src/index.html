@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Clicker Clicker v1.6.4</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
     <div class="game-container">
@@ -12,8 +12,6 @@
             <button onclick="changeName()">Change Name</button>
             <br>
             <button onclick="resetProgress()">RESET PROGRESS</button>
-            <br>
-            <button onclick="showPatchNotes()">PATCH NOTES</button>
             <p>In this clicker, you click clickers to get more clickers!</p>
             <h2 id="score">Score: 0</h2>
             <button id="main-button" onclick="onMainButtonClicked()">Click me!</button>
@@ -30,7 +28,10 @@
                 <button class="tab-button"onclick="switchTab('store-panel')">Shop</button>
                 <button class="tab-button" onclick="switchTab('trophy-panel')">Achievements</button>
                 <button class="tab-button" onclick="switchTab('notification-panel')">Notifications</button>
+                <button class="tab-button" onclick="switchTab('settings-panel')">Settings</button>
+                <button class="tab-button" onclick="switchTab('patch-panel')">Patch Notes</button>
             </span>
+
             <div class="store-panel" id="store-panel">
                 <h2>Shop</h2>
             </div>
@@ -41,6 +42,19 @@
 
             <div class="store-panel" id="notification-panel">
                 <h2>Notifications</h2>
+            </div>
+
+            <div class="store-panel" id="settings-panel">
+                <h2>Settings</h2>
+
+                <button onclick="toggleRightClick()" title="Toggle the menu that appears when you right-click.">Right-Click Menu: <span id="rc-status">OFF</span></button>
+                <button onclick="togglePerformance()" title="Effects like shadows, glow, and smooth transitions. Disabling may improve performance.">Fancy Graphics: <span id="perf-status">OFF</span></button>
+                <button onclick="toggleSFX()">Sound effects: <span id="sfx-status">ON</span></button>
+                <button onclick="toggleMusic()">Music: <span id="msc-status">OFF</span></button>
+            </div>
+
+            <div class="store-panel" id="patch-panel">
+                <h2>Patch Notes</h2>
             </div>
         </div>
 
