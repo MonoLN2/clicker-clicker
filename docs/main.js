@@ -1,4 +1,4 @@
-const ver = "1.6.8"; // version stored here
+const ver = "1.6.6"; // version stored here
 document.title = "Clicker Clicker v" + ver;
 
 /*
