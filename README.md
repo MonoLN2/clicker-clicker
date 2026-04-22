@@ -47,3 +47,5 @@ v1.6.3 (v1.6.5 pre-release): Fixed critical bugs with the bonus engine.
 v1.6.4 (v1.6.5 pre-release): Added some new upgrades, and fixed not getting refunded for the offline bonus if you hit the cap. Also added a notification panel for less important messages. Also added cutting-edge CSS filters for a better experience.
 
 v1.6.5: Added a new settings and patch notes panel. Upgraded the CSS for more fancy looks. Added sound effects and music, and fixed a few bugs. Also, added version tracking, which will be useful for future updates.
+
+v1.6.6: Fixed a bug where some new upgrdes wouldn't work on some older saves, and added lots of new achievements.

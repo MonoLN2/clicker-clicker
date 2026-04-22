@@ -1,4 +1,4 @@
-const ver = "1.6.5"; // version stored here
+const ver = "1.6.8"; // version stored here
 document.title = "Clicker Clicker v" + ver;
 
 /*
@@ -33,11 +33,24 @@ let trophies = [
     { name: "Getting there", requirement: 1000, reqType: "score"},
     { name: "Cha-ching!", requirement: 10000, reqType: "score"},
     { name: "Rolling in dough", requirement: 100000, reqType: "score"},
-    { name: "WE'RE RICH!!", requirement: 1000000, reqType: "score"},
+    { name: "WE'RE RICH!!", requirement: 1000000, reqType: "score"}, // one million
+    { name: "Richest person on Earth", requirement: 1000000000, reqType: "score"}, // one billion
+    { name: "Aren't you running out of space to put all of that cash?", requirement: 1000000000000, reqType: "score"}, // one trillion
+    { name: "uh.....", requirement: 1000000000000000, reqType: "score"}, // one quadrillion
+    { name: "You ARE going to stop soon. Right?", requirement: 1000000000000000000, reqType: "score"}, // one quintillion
+    { name: "1e+21 (1 SEXTILLION) DOLLARS!!! WE ARE OFFICIAL IN SCIENTIFIC NOTATION TERRITORY!", requirement: 1000000000000000000000, reqType: "score"}, // one sextillion
     { name: "Sit back, relax, and watch the money add up.", requirement: 100, reqType: "cps"},
-    { name: "CLICKITY CLICK", requirement: 100, reqType: "cpc"},
     { name: "Now THAT'S fast!", requirement: 1000, reqType:"cps"},
-    { name: "Click away!", requirement: 1000, reqType: "cpc"}
+    { name: "You don't even need to click anymore", requirement: 100000, reqType: "cps"},
+    { name: "SHOOOOOOOOOOOOOOOOMMMM!!! (that was your income)", requirement: 1000000, reqType: "cps"}, // one million
+    { name: "I'm kind of running out of names for these achivements. And actually, there's no hard limit to how long these achivement names can be, just so you know.", requirement: 1000000000, reqType: 'cps'}, // one billion
+    { name: "one trillion cps.... 😯", requirement: 1000000000000, reqType: "cps"},
+    { name: "CLICKITY CLICK", requirement: 100, reqType: "cpc"},
+    { name: "Click away!", requirement: 1000, reqType: "cpc"},
+    { name: "click click click click click click click click click click click click click click click click click click click click click click click click click click click click click click ", requirement: 100000, reqType: "cpc"},
+    { name: "*clicking intensifies*", requirement: 1000000, reqType: "cpc"}, // one million
+    { name: "Manual Labor", requirement: 1000000000, reqType: "cpc"}, // one billion
+    { name: "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", requirement: 1000000000000, reqType: "cpc"} // one trillion cpc! wow
 ];
 
 let bonuses = [
@@ -71,6 +84,7 @@ const patchNotes = `
     v1.6.3 (v1.6.5 pre-release): Fixed critical bugs with the bonus engine.\n
     v1.6.4 (v1.6.5 pre-release): Added some new upgrades, and fixed not getting refunded for the offline bonus if you hit the cap. Also added a notification panel for less important messages. Also added cutting-edge CSS filters for a better experience.\n
     v1.6.5: Added a new settings and patch notes panel. Upgraded the CSS for more fancy looks. Added sound effects and music, and fixed a few bugs. Also, added version tracking, which will be useful for future updates.\n
+    v1.6.6: Fixed a bug where some new upgrdes wouldn't work on some older saves, and added lots of new achievements.
 `;
 
 const versions = [
@@ -90,7 +104,8 @@ const versions = [
     'v1.5.1',
     'v1.5.2',
     'v1.5.5',
-    'v1.6.5'
+    'v1.6.5',
+    'v1.6.8'
 ];
 
 const currentVersionID = versions.length; // the version's id
@@ -201,6 +216,12 @@ const upgNotif = document.getElementById('upg-notifier');
 render();
 
 console.log("Save data loaded. Game officially started. Good luck!");        
+
+// failsafe if upgrades were added after the player's save was generated
+upgrades.forEach(upg => {
+    if (currentPrices[upg.id] === undefined) currentPrices[upg.id] = upg.baseCost;
+});
+
 // ----- ENGINE & GAME LOOP -----
 
 // VERY IMPORTANT FUNCTION: THE CLICK BUTTON
