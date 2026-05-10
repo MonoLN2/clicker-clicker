@@ -145,7 +145,7 @@ let settings = {
     performanceMode: false,
     sfx: true,
     music: false,
-}
+};
 
 // audio
 const audio = {
@@ -324,7 +324,7 @@ function checkForTrophies() {
     // counter for the luck
     let trphBonus = 0;
     // Locked by default
-    let trphCollected = false
+    let trphCollected = false;
 
     // Repeat for every trophy
     trophies.forEach(trph => {
@@ -489,7 +489,7 @@ function renderTrophies() {
         if (!collectedTrophies.includes(trph.name)) { return; }
 
         let crd = document.createElement('div');
-        let reqText = ""
+        let reqText = "";
         crd.className = "trophy-card";
 
         if (trph.reqType === "score") {
@@ -569,7 +569,7 @@ async function resetProgress() {
         luckyClickTimeLeft = -1;
         couponTimeLeft = -1;
         frenzyTimeLeft = -1;
-        highProductivityTimeLeft = -1
+        highProductivityTimeLeft = -1;
         speculationActive = false;
 
         notifications = [];
@@ -653,7 +653,7 @@ function confirmInputAlert() {
 
 // this gives a notification
 function notify(header, message, timestamp) {
-    console.log(`Recieved notification w/ title: ${header}, message: ${message}, and timestamp: ${timestamp}.`)
+    console.log(`Recieved notification w/ title: ${header}, message: ${message}, and timestamp: ${timestamp}.`);
     let newMessage = { header: header, message: message, timestamp: timestamp };
     notifications.push(newMessage);
     render();

@@ -50,4 +50,4 @@ v1.6.5: Added a new settings and patch notes panel. Upgraded the CSS for more fa
 
 v1.6.6: Fixed a bug where some new upgrdes wouldn't work on some older saves, and added lots of new achievements.
 
-v1.6.7: Fixed a bug where the offline bonus price would still go up, even if you were at the cap. * THE FOLLOWING IS NOT IMPORTANT FOR NON-TECH NERDS * Also added a seperate src directory, where the original source code will go. The original docs directory now contains a bundled version of the code for performance. This will not affect normal gameplay.
+v1.6.7: Fixed a bug where the offline bonus price would still go up, even if you were at the cap.
