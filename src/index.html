@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Clicker Clicker v1.6.4</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="main-game">
+            <h1 id="clicker-name">Clicker Clicker</h1>
+            <button onclick="changeName()">Change Name</button>
+            <br>
+            <button onclick="resetProgress()">RESET PROGRESS</button>
+            <p>In this clicker, you click clickers to get more clickers!</p>
+            <h2 id="score">Score: 0</h2>
+            <button id="main-button" onclick="onMainButtonClicked()">Click me!</button>
+            <p id="cps">CPS: 0</p>
+            <p id="cpc">CPC: 1</p>
+            <p id="cpc-cap">CPC CAP: 100</p>
+            <div id="upg-notifier">
+                <p>No bonuses currently active.</p>
+            </div>
+        </div>
+
+        <div id="side-panel" class="side-panel">
+            <span class="tabs">
+                <button class="tab-button"onclick="switchTab('store-panel')">Shop</button>
+                <button class="tab-button" onclick="switchTab('trophy-panel')">Achievements</button>
+                <button class="tab-button" onclick="switchTab('notification-panel')">Notifications</button>
+                <button class="tab-button" onclick="switchTab('settings-panel')">Settings</button>
+                <button class="tab-button" onclick="switchTab('patch-panel')">Patch Notes</button>
+            </span>
+
+            <div class="store-panel" id="store-panel">
+                <h2>Shop</h2>
+            </div>
+            
+            <div class="store-panel" id="trophy-panel">
+                <h2>Achievements</h2>
+            </div>
+
+            <div class="store-panel" id="notification-panel">
+                <h2>Notifications</h2>
+            </div>
+
+            <div class="store-panel" id="settings-panel">
+                <h2>Settings</h2>
+
+                <button onclick="toggleRightClick()" title="Toggle the menu that appears when you right-click.">Right-Click Menu: <span id="rc-status">OFF</span></button>
+                <button onclick="togglePerformance()" title="Effects like shadows, glow, and smooth transitions. Disabling may improve performance.">Fancy Graphics: <span id="perf-status">OFF</span></button>
+                <button onclick="toggleSFX()">Sound effects: <span id="sfx-status">ON</span></button>
+                <button onclick="toggleMusic()">Music: <span id="msc-status">OFF</span></button>
+            </div>
+
+            <div class="store-panel" id="patch-panel">
+                <h2>Patch Notes</h2>
+            </div>
+        </div>
+
+        <div id="custom-alert-overlay" class="alert-overlay">
+            <div class="alert-box">
+                <h3 id="alert-title">Notificiation</h3>
+                <p id="alert-message">This is a message!</p>
+                <button onclick="closeAlert()">Close</button>
+            </div>
+        </div>
+
+        <div id="custom-input-overlay" class="alert-overlay">
+            <div class="alert-box">
+                <h3 id="input-alert-title">Notification</h3>
+                <p id="input-alert-message">This is a message!</p>
+                <textarea id="input-textarea" placeholder="Enter text here....">TextTextText</textarea>
+                <span id="input-buttons">
+                    <button onclick="closeInputAlert()">Close</button>
+                    <button onclick="confirmInputAlert()">Confirm</button>
+                </span>
+            </div>
+        </div>
+    </div>
+        
+    <script src="main.js"></script>
+</body>
+</html>
